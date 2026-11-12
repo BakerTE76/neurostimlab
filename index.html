@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+<title>Baker Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Laboratory for Cognitive Neuroimaging and Stimulation, Rutgers University–Newark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: one left-aligned reading column with a mono "channel label" rail per section; the hero is a live ERP plot of the reward positivity. */
+:root{
+  --bg:#f6f7f9; --surface:#ffffff; --ink:#12161d; --muted:#5a6270; --rule:#dde1e7;
+  --accent:#1f5fbf; --accent-soft:#dfe8f7; --trace:#2b3442; --trace2:#9aa3b0;
+  --f-display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1217; --surface:#161a21; --ink:#e7eaef; --muted:#9aa2ae; --rule:#262c36;
+  --accent:#6fa8ff; --accent-soft:#17263f; --trace:#d4d9e0; --trace2:#5d6672; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1217; --surface:#161a21; --ink:#e7eaef; --muted:#9aa2ae; --rule:#262c36;
+  --accent:#6fa8ff; --accent-soft:#17263f; --trace:#d4d9e0; --trace2:#5d6672; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+a{color:inherit;text-decoration-color:var(--accent);text-underline-offset:3px}
+a:hover{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+.wrap{max-width:1080px;margin:0 auto}
+
+/* Nav */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--rule)}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:12px;flex-wrap:wrap}
+.brand{font-family:var(--f-display);font-weight:700;font-size:1.05rem;letter-spacing:.01em;text-decoration:none;display:flex;align-items:center;gap:10px}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent)}
+nav ul{display:flex;gap:4px 18px;list-style:none;margin:0;padding:0;flex-wrap:wrap}
+nav a{font-family:var(--f-mono);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;text-decoration:none;color:var(--muted)}
+nav a:hover{color:var(--accent)}
+
+/* Hero */
+.hero{display:grid;grid-template-columns:minmax(0,1fr);gap:28px;align-items:center;padding-block:28px 40px}
+.hero > *{min-width:0}
+.home-photo{margin:0;border-radius:4px;overflow:hidden}
+.home-photo img{display:block;width:100%;height:auto}
+.cover{display:block;width:100%;height:auto;border-radius:4px}
+.ru-logo{display:block;width:min(308px,70%);height:auto;background:#fff;padding:8px 12px;border-radius:4px}
+.team-photo{margin:0 0 30px;border-radius:4px;overflow:hidden;aspect-ratio:16/9;background:var(--rule)}
+.team-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 55%;display:block}
+.hero-photo{margin:0;border-radius:4px;overflow:hidden;aspect-ratio:16/8;background:var(--rule)}
+.hero-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 55%;display:block}
+.kicker{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 14px}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(2.2rem,5.2vw,3.6rem);line-height:1.02;letter-spacing:-.01em;margin:0 0 20px;text-wrap:balance}
+h1 em{font-style:normal;color:var(--accent)}
+.lede{font-size:1.12rem;color:var(--muted);max-width:34em;margin:0 0 26px}
+.mission{margin:0 0 26px;padding-left:18px;color:var(--muted);font-size:.97rem;max-width:36em}
+.mission li{margin-bottom:6px}
+.mission b{color:var(--ink);font-weight:600}
+.btns{display:flex;gap:10px;flex-wrap:wrap}
+.btn{font-family:var(--f-display);font-weight:600;font-size:1rem;letter-spacing:.02em;padding:10px 18px;border:1.5px solid var(--ink);text-decoration:none;border-radius:2px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.btn.primary:hover{color:var(--bg);filter:brightness(1.08)}
+.erp{background:var(--surface);border:1px solid var(--rule);padding:16px 14px 10px}
+.erp svg{display:block;width:100%;height:auto}
+.erp figcaption{font-family:var(--f-mono);font-size:.72rem;color:var(--muted);margin-top:6px;line-height:1.5}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-family:var(--f-mono);font-size:.72rem;color:var(--muted);margin-bottom:6px}
+.legend i{display:inline-block;width:18px;height:0;border-top:2px solid;vertical-align:middle;margin-right:6px}
+
+/* Sections */
+section{display:grid;grid-template-columns:150px 1fr;gap:24px;padding-block:52px;border-top:1px solid var(--rule)}
+section > *{min-width:0}
+.label{font-family:var(--f-mono);font-size:.76rem;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);padding-top:8px}
+h2{font-family:var(--f-display);font-weight:700;font-size:clamp(1.6rem,3vw,2.1rem);line-height:1.1;margin:0 0 18px;text-wrap:balance}
+h3{font-family:var(--f-display);font-weight:600;font-size:1.2rem;line-height:1.2;margin:0 0 6px}
+p{margin:0 0 14px;max-width:65ch}
+.muted{color:var(--muted)}
+
+.themes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 36px;margin-top:8px}
+.theme{border-top:2px solid var(--ink);padding-top:14px}
+.theme .tag{font-family:var(--f-mono);font-size:.72rem;color:var(--muted);letter-spacing:.04em;display:block;margin-bottom:6px}
+.theme p{font-size:.97rem;margin:0}
+
+.intro{font-size:1.08rem;max-width:62ch;margin-bottom:34px}
+.program{padding:26px 0;border-top:1px solid var(--rule);max-width:none}
+.program::after{content:"";display:block;clear:both}
+.program p{max-width:62ch}
+.prog-img{float:right;width:min(38%,340px);margin:4px 0 12px 28px}
+.prog-fig{background:#fff;border-radius:4px;padding:8px;width:min(38%,260px)}
+.prog-fig-w{width:min(42%,360px)}
+.prog-fig img{display:block;width:100%;height:auto}
+.bear{margin:32px 0 0;border-radius:4px;overflow:hidden}
+.bear-top{margin:0 0 28px;max-width:560px}
+.bear img{display:block;width:100%;height:auto}
+.prog-dark{clear:right;width:min(42%,360px);background:#000;border-radius:4px;overflow:hidden}
+.prog-dark img{display:block;width:100%;height:auto}
+.m-img{margin:0 0 10px;border-radius:4px;overflow:hidden;aspect-ratio:16/10;background:#000}
+.m-img img{width:100%;height:100%;object-fit:cover;display:block}
+.prog-img a{display:block;border-radius:4px;overflow:hidden;background:var(--rule)}
+.prog-img img{display:block;width:100%;height:auto}
+@media (max-width:700px){.prog-img{float:none;width:100%;margin:0 0 14px}}
+.program .tag{font-family:var(--f-mono);font-size:.72rem;color:var(--accent);letter-spacing:.04em;display:block;margin-bottom:6px}
+.program h3{font-size:1.4rem;margin-bottom:10px}
+.program p{margin-bottom:12px}
+.papers{font-size:.86rem;color:var(--muted)}
+.papers a{color:var(--ink)}
+.areas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 36px;margin-top:8px}
+@media (max-width:560px){.areas{grid-template-columns:1fr}}
+.areas .theme:last-child:nth-child(odd){grid-column:1/-1}
+.areas .theme p{max-width:72ch}
+.tools{margin-top:0;display:flex;flex-wrap:wrap;gap:8px}
+.tools span{font-family:var(--f-mono);font-size:.76rem;padding:5px 10px;background:var(--surface);border:1px solid var(--rule);border-radius:2px}
+
+.group + .group{margin-top:34px}
+.group-h{font-family:var(--f-mono);font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 14px;padding-bottom:8px;border-bottom:1px solid var(--rule)}
+.pi{display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start}
+.avatar{width:64px;height:64px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-family:var(--f-display);font-weight:700;font-size:1.25rem;flex:none}
+img.avatar{object-fit:cover;display:block}
+.pi .avatar{width:96px;height:96px;font-size:1.8rem}
+.role{font-family:var(--f-mono);font-size:.76rem;color:var(--muted);margin:0 0 8px}
+.people{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+.person{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start}
+.person h3{font-size:1.08rem;margin:2px 0 2px}
+.person p{font-size:.9rem;margin:0;color:var(--muted)}
+.meth{font-family:var(--f-mono);font-size:.74rem;color:var(--ink)}
+.grads{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.grads li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:center;padding-bottom:14px;border-bottom:1px dotted var(--rule);font-size:.93rem}
+.grad-ph{display:flex;gap:6px}
+.grad-ph a{display:block;width:84px;height:84px;border-radius:4px;overflow:hidden;background:var(--rule)}
+.grad-ph img{width:100%;height:100%;object-fit:cover;display:block}
+@media (max-width:560px){.grads li{grid-template-columns:1fr}.grad-ph a{width:72px;height:72px}}
+.alum-h{font-family:var(--f-display);font-weight:600;font-size:1.02rem;margin:22px 0 6px}
+.alum-h:first-of-type{margin-top:0}
+.staff{list-style:none;margin:0;padding:0;font-size:.93rem}
+.staff li{display:grid;grid-template-columns:110px 1fr;gap:12px;padding:5px 0;border-bottom:1px dotted var(--rule)}
+.staff .yrs{font-family:var(--f-mono);font-size:.78rem;color:var(--muted);padding-top:2px;font-variant-numeric:tabular-nums}
+@media (max-width:560px){.staff li{grid-template-columns:1fr;gap:0}}
+.alum-list .sub{display:block;font-family:var(--f-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:4px}
+.alum-list{font-size:.93rem;max-width:none;margin:0}
+.alumni{columns:2;column-gap:36px;font-size:.93rem;margin:0;padding:0;list-style:none}
+.alumni li{break-inside:avoid;padding:5px 0;border-bottom:1px dotted var(--rule)}
+.alumni b{font-weight:600}
+
+.pubs{list-style:none;margin:0;padding:0}
+.yr{font-family:var(--f-display);font-weight:700;font-size:1.3rem;color:var(--accent);margin:26px 0 8px}
+.yr:first-child{margin-top:0}
+.pub{padding:10px 0;border-bottom:1px solid var(--rule)}
+.pub a{font-weight:600;text-decoration:none}
+.pub a:hover{text-decoration:underline}
+.pub .au{display:block;font-size:.9rem;color:var(--muted)}
+.pub .j{font-size:.9rem;font-style:italic}
+.pub .badge{font-family:var(--f-mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);border:1px solid var(--accent);padding:1px 6px;border-radius:2px;margin-left:6px;font-style:normal;vertical-align:1px}
+details{margin-top:22px}
+summary{cursor:pointer;font-family:var(--f-display);font-weight:600;font-size:1.05rem;padding:10px 0}
+summary:hover{color:var(--accent)}
+
+.news{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.news li{display:grid;grid-template-columns:96px 1fr;gap:18px;padding:12px 0;border-bottom:1px solid var(--rule)}
+.news time{font-family:var(--f-mono);font-size:.8rem;color:var(--muted);padding-top:2px;font-variant-numeric:tabular-nums}
+
+.life-h{font-size:1.25rem;margin:28px 0 10px;padding-bottom:8px;border-bottom:1px solid var(--rule)}
+.life.soc-line li{grid-template-columns:minmax(0,1fr)}
+.soc-d{min-width:0;width:100%}
+.soc-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 16px}
+.soc-tabs button{font-family:var(--f-mono);font-size:.74rem;text-transform:uppercase;letter-spacing:.06em;padding:6px 12px;border:1px solid var(--rule);background:var(--surface);color:var(--muted);border-radius:999px;cursor:pointer}
+.soc-tabs button:hover{color:var(--accent);border-color:var(--accent)}
+.soc-tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.soc-panel{min-height:60px}
+.soc-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.soc-card{padding:14px 16px;border:1px solid var(--rule);background:var(--surface);border-radius:3px}
+.soc-card h3{font-size:1.02rem;margin:0 0 4px}
+.soc-card p{font-size:.92rem;color:var(--muted);margin:0}
+.life-sub{font-family:var(--f-mono);font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:500;margin:22px 0 4px}
+.life-slot{min-height:40px}
+.soc-d summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px}
+.soc-d summary::-webkit-details-marker{display:none}
+.soc-d summary h3{margin:0}
+.soc-d summary::after{content:"+";font-family:var(--f-mono);font-size:.9rem;color:var(--accent);border:1px solid var(--rule);border-radius:999px;width:22px;height:22px;display:grid;place-items:center;flex:none}
+.soc-d[open] summary::after{content:"\2212"}
+.soc-d summary:hover h3{color:var(--accent)}
+.photos{margin-top:10px}
+.photos summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:8px;font-family:var(--f-mono);font-size:.74rem;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);padding:5px 12px;border:1px solid var(--rule);border-radius:999px;background:var(--surface)}
+.photos summary::-webkit-details-marker{display:none}
+.photos summary::before{content:"+"}
+.photos[open] summary::before{content:"\2212"}
+.photos summary:hover{border-color:var(--accent)}
+.pi-aff{font-size:.93rem;margin:0 0 10px}
+.pi-aff .k{display:block;font-family:var(--f-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:2px}
+.mosaic{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:90px;grid-auto-flow:dense;gap:6px;margin-top:12px}
+.mosaic a{display:block;overflow:hidden;border-radius:3px;background:var(--rule)}
+.mosaic a.port{grid-row:span 2}
+.mosaic a.land{grid-column:span 2;grid-row:span 2}
+.mosaic a.big{grid-column:span 2;grid-row:span 3}
+.mosaic img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.mosaic a:hover img{transform:scale(1.04)}
+@media (prefers-reduced-motion: reduce){.mosaic img{transition:none}}
+@media (max-width:560px){.mosaic{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:80px}}
+.jg{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.jg::after{content:"";flex-grow:999}
+.jg a{display:block;flex-grow:var(--r);flex-basis:calc(var(--r) * 140px);aspect-ratio:var(--r);overflow:hidden;border-radius:3px;background:var(--rule)}
+.jg img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.jg a:hover img{transform:scale(1.03)}
+@media (prefers-reduced-motion: reduce){.jg img{transition:none}}
+@media (max-width:560px){.jg a{flex-basis:calc(var(--r) * 100px)}}
+.gallery{display:grid;gap:6px;margin-top:14px}
+.g-row{display:grid;gap:6px}
+.g-land{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g-port{grid-template-columns:repeat(5,minmax(0,1fr))}
+.gallery .ph{display:block;overflow:hidden;border-radius:3px;background:var(--rule)}
+.g-land .ph{aspect-ratio:4/3}
+.g-port .ph{aspect-ratio:3/4}
+.gallery img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.gallery .ph:hover img{transform:scale(1.03)}
+@media (prefers-reduced-motion: reduce){.gallery img{transition:none}}
+@media (max-width:560px){.g-port{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.collage{display:grid;gap:6px;margin-top:14px;grid-auto-rows:120px;grid-auto-flow:dense}
+.collage.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.collage.c4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.collage .ph{display:block;overflow:hidden;border-radius:3px;background:var(--rule)}
+.collage .ph.port{grid-row:span 2}
+.collage .ph.land{grid-column:span 2;grid-row:span 2}
+.collage img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.collage .ph:hover img{transform:scale(1.03)}
+@media (prefers-reduced-motion: reduce){.collage img{transition:none}}
+@media (max-width:560px){.collage.c3,.collage.c4{grid-template-columns:repeat(2,minmax(0,1fr))}.collage{grid-auto-rows:100px}}
+.life{list-style:none;margin:16px 0 0;padding:0;border-left:2px solid var(--rule)}
+.life li{display:grid;grid-template-columns:90px minmax(0,1fr);gap:18px;padding:0 0 22px 20px;position:relative}
+.life li::before{content:"";position:absolute;left:-6px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--accent)}
+.life time{font-family:var(--f-mono);font-size:.78rem;color:var(--muted);padding-top:3px;font-variant-numeric:tabular-nums}
+.life h3{font-size:1.08rem;margin:0 0 2px}
+.life p{margin:0;font-size:.95rem;color:var(--muted)}
+@media (max-width:560px){.life li{grid-template-columns:1fr;gap:2px}}
+.study{background:var(--surface);border:1px solid var(--rule);border-left:4px solid var(--accent);padding:22px 24px;margin-top:6px}
+.study h3{font-size:1.3rem}
+.study-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 28px}
+.study-grid > *{min-width:0}
+.study .k{font-family:var(--f-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:8px 0 0}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:6px 0 18px;padding:14px 0;border-block:1px solid var(--rule)}
+.facts dt{font-family:var(--f-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.facts dd{margin:2px 0 0;font-size:.93rem}
+@media (max-width:700px){.study-grid,.facts{grid-template-columns:1fr}}
+.study ul{margin:10px 0 14px;padding-left:20px}
+.contactgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.contactgrid .k{font-family:var(--f-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);display:block;margin-bottom:4px}
+.copy{font-family:var(--f-mono);font-size:.72rem;background:none;border:1px solid var(--rule);color:var(--muted);padding:3px 8px;margin-left:8px;cursor:pointer;border-radius:2px}
+.copy:hover{color:var(--accent);border-color:var(--accent)}
+.funders{display:flex;flex-wrap:wrap;gap:10px 28px;font-family:var(--f-display);font-weight:600;font-size:1.02rem;color:var(--muted);margin-top:6px}
+
+.view{display:none}
+.view.on{display:grid}
+section.view{border-top:none;padding-block:44px 64px}
+
+nav a[aria-current="page"]{color:var(--ink);border-bottom:2px solid var(--accent);padding-bottom:2px}
+footer{border-top:1px solid var(--rule);padding-block:28px 40px;font-size:.85rem;color:var(--muted)}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+@media (max-width:860px){
+  .hero{grid-template-columns:1fr;padding-block:36px 28px}
+  section{grid-template-columns:1fr;gap:6px;padding-block:40px}
+  .label{padding-top:0}
+  .people{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .contactgrid{grid-template-columns:1fr}
+}
+@media (max-width:560px){
+  .themes,.people{grid-template-columns:1fr}
+  .alumni{columns:1}
+  .pi{grid-template-columns:1fr}
+  .news li{grid-template-columns:1fr;gap:2px}
+  nav ul{gap:2px 12px}
+}
+</style>
+</head>
+<body>
+
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#home"><span class="dot" aria-hidden="true"></span>Baker Lab · LCNS</a>
+    <nav aria-label="Main">
+      <ul>
+        <li><a href="#research">Research</a></li>
+        <li><a href="#people">People</a></li>
+        <li><a href="#publications">Publications</a></li>
+        <li><a href="#news">News</a></li>
+        <li><a href="#lab-life">Lab life</a></li>
+        <li><a href="#participate">Participate</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="top">
+  <div class="hero view" id="home">
+    <img class="ru-logo" src="img/rutgers_newark.png" alt="Rutgers University–Newark" width="308" height="70">
+    <figure class="home-photo"><img src="img/m_robot.jpg" alt="The lab robot-assisted TMS system positioning a coil over an EEG cap"></figure>
+    <div>
+      <p class="kicker">Baker Lab · Principal Investigator Travis E. Baker, PhD · Rutgers University–Newark</p>
+      <h1>Laboratory for Cognitive Neuroimaging and <em>Stimulation</em></h1>
+      <p class="lede">At LCNS, we combine advanced multimodal neuroimaging and non-invasive brain stimulation techniques to uncover how the brain supports reinforcement learning, decision-making, cognitive control, and spatial navigation. Our research focuses on understanding how specific brain regions, including the anterior midcingulate cortex, midbrain dopamine system, basal ganglia, and parahippocampal cortex, contribute to these psychological processes in both typical and clinical populations.</p>
+      <ul class="mission">
+        <li><b>Advance scientific understanding</b> of the neural and cognitive mechanisms that underlie goal-directed navigation.</li>
+        <li><b>Refine neuroimaging methods and experimental designs</b> to better characterize brain function across diverse populations, including individuals with substance use disorders.</li>
+        <li><b>Develop innovative brain stimulation interventions</b> to improve psychiatric care and cognitive health.</li>
+      </ul>
+    </div>
+  </div>
+
+  <section id="research" class="view">
+    <div class="label">Research</div>
+    <div>
+      <img class="cover" src="img/cover.jpg" alt="Lab research at a glance: addiction, TMS targeting, diffusion imaging, the reward positivity, genetics, virtual navigation and EEG time-frequency activity" style="margin-bottom:28px">
+      <h2>Research</h2>
+      <p class="intro">We study how the brain learns from reward and finds its way through the world, and how these systems break down in addiction and other disorders. To do this we combine EEG, MEG and fMRI with robot-assisted and closed-loop TMS, virtual and augmented reality, and computational models of learning. Our long-term goal is to turn what we learn about these circuits into new brain-based treatments.</p>
+
+      <article class="program">
+        <span class="tag">reward positivity · reinforcement learning</span>
+        <figure class="prog-img prog-fig prog-fig-w"><img src="img/rp_rewp.png" alt="Event-related potentials at electrode FCz for reward and no-reward feedback, with the reward positivity difference wave peaking around 250 milliseconds"></figure><figure class="prog-img prog-dark"><img src="img/rp_mcc.jpg" alt="Anterior midcingulate cortex activation on a sagittal brain view" loading="lazy"></figure><h3>How the brain learns from reward</h3>
+        <p>When an outcome is better than expected, dopamine signals a reward prediction error, and the anterior midcingulate cortex (MCC) uses it to learn which actions are worth pursuing. We track this signal at the scalp with the reward positivity, an EEG response that peaks about a quarter of a second after feedback. Combining it with reinforcement learning models, we ask how each person learns from wins and losses and how this shapes effort, choice and goal pursuit.</p>
+        <p>We also study how this learning signal is disrupted across clinical populations, including addiction, depression and early life adversity, with the aim of identifying where reward processing goes wrong and how it might be restored.</p>
+        <p class="papers">Key papers: <a href="https://doi.org/10.1111/psyp.70308">Gao et al., 2026</a> · <a href="https://doi.org/10.1523/ENEURO.0372-23.2024">Stringfellow et al., 2024</a> · <a href="https://www.sciencedirect.com/science/article/pii/S0301051111000160">Baker &amp; Holroyd, 2011</a></p>
+      </article>
+
+      <article class="program">
+        <span class="tag">substance use disorders · TMS</span>
+        <figure class="prog-img"><a href="img/rp_tms.jpg"><img src="img/rp_tms.jpg" alt="Participant wearing an EEG cap during robot-guided TMS while doing a computer task" loading="lazy"></a></figure><h3>Repairing reward function in addiction</h3>
+        <p>In addiction, drug rewards come to outweigh everyday rewards like money, food and social connection. Our clinical program asks whether stimulating the prefrontal cortex can rebalance the MCC's response to reward, so people are better able to pursue and maintain recovery goals.</p>
+        <p>Along the way, we are developing new tools for precision psychiatry: brain-based measures that identify who is most likely to benefit from stimulation, and individualized, image-guided targeting that tailors treatment to each person's brain.</p>
+        <p class="papers">Key papers: <a href="https://doi.org/10.1038/s41398-025-03569-z">Biernacki et al., 2025</a> · <a href="https://www.sciencedirect.com/science/article/pii/S0006322317300847">Baker et al., 2017</a> · <a href="https://www.sciencedirect.com/science/article/abs/pii/S2451902220301634">Baker et al., 2020</a></p>
+      </article>
+
+      <article class="program">
+        <span class="tag">right posterior theta · parahippocampal cortex</span>
+        <figure class="prog-img prog-fig"><img src="img/rp_phc.png" alt="Sagittal brain view with the parahippocampal cortex highlighted in color"></figure><h3>How humans get from point A to point B</h3>
+        <p>In animals, theta rhythms in the parahippocampal cortex reset when something important happens, such as finding food, and this helps store where it happened. We study the human version of this signal: right-posterior theta, a 4–8 Hz burst over the right side of the scalp when people find rewards in virtual mazes.</p>
+        <p>We also use TMS to probe this system directly, with the goal of learning how stimulation can restore memory in clinical populations such as mild cognitive impairment, dementia and Alzheimer's disease.</p>
+        <p class="papers">Key papers: <a href="https://doi.org/10.1162/IMAG.a.105">Güth et al., 2025</a> · <a href="https://doi.org/10.1016/j.ijpsycho.2026.113460">Güth &amp; Baker, 2026</a> · <a href="https://www.nature.com/articles/s41598-022-05955-9">Lin et al., 2022</a></p>
+      </article>
+
+      <article class="program">
+        <span class="tag">augmented reality · mobile EEG · think-aloud</span>
+        <figure class="prog-img"><a href="img/rp_kira.jpg"><img src="img/rp_kira.jpg" alt="Participant walking with mobile EEG and motion sensors during a real-world task" loading="lazy"></a></figure><h3>Decision-making in the real world</h3>
+        <p>We usually study decision-making the way we study rats in a Skinner box: people press buttons to choose between options that pay out with some probability. Because button presses say so little, many different models fit them equally well, and it is unclear whether such simple tasks engage the same brain processes people use in everyday life.</p>
+        <p>To move beyond this, we combine three tools. Augmented reality places tasks into the real environment, so people move, turn and use spatial context as they would outside the lab. Mobile EEG records brain activity while they do. And because people, unlike rats, can talk, we ask them to think out loud as they decide, then use large language models to analyze what they say. Together these reveal the strategies people use and how individuals differ, which helps us build better models of how the brain makes decisions.</p>
+        <p class="papers">Key papers: <a href="https://doi.org/10.1523/ENEURO.0372-23.2024">Stringfellow et al., 2024</a> · <a href="https://escholarship.org/uc/item/4sb936m3">Zhang, Xie et al., 2025</a> · <a href="https://www.nature.com/articles/s41598-022-05955-9">Lin et al., 2022</a></p>
+      </article>
+
+      <h2 style="margin-top:52px">Methods</h2>
+      <div class="themes">
+        <div class="theme"><h3>Robot-assisted image-guided TMS</h3><p>A robot holds the coil on an MRI-defined target with millimeter precision, follows head movement, and returns to the same spot across sessions.</p></div>
+        <div class="theme"><h3>Closed-loop EEG-TMS</h3><p>Our system reads EEG in real time and fires a TMS pulse at a chosen phase of an ongoing rhythm. During navigation it hits the targeted theta phase more reliably than standard phase-prediction methods.</p></div>
+        <div class="theme"><h3>Virtual and augmented reality with EEG</h3><p>VR and AR headsets combined with mobile EEG let us link brain signals to every movement a person makes in a realistic environment.</p></div>
+        <div class="theme"><h3>Multimodal imaging and modeling</h3><p>Simultaneous EEG-fMRI, MEG and reinforcement learning models let us connect scalp signals to their sources in the brain and to how each person learns.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="people" class="view">
+    <div class="label">People</div>
+    <div>
+      <h2>The team</h2>
+      <figure class="team-photo"><img src="img/hero_lab.jpg" alt="The Baker Lab team around the conference table at CMBN"></figure>
+      <div class="group">
+        <div class="pi">
+          <img class="avatar" src="img/hs_tb.jpg" alt="Travis E. Baker">
+          <div>
+            <h3>Travis E. Baker, PhD</h3>
+            <p class="role">Principal Investigator · Associate Professor, Center for Molecular and Behavioral Neuroscience</p>
+            <p>The three pillars of my research program are as follows: 1) advance our scientific knowledge of the neurocognitive mechanisms that underlie goal-directed behavior, 2) create novel neuroimaging paradigms to better characterize these functions in the brain, and 3) devise the next generation of brain-based interventions for mental disorders. From basic to clinical investigations, my research has largely focused on the reward and control function associated with the anterior midcingulate cortex, the decision-making function associated with the mesocorticolimbic dopamine system, and the navigation function associated with the parahippocampal cortex. This work involves a new fusion of techniques, including virtual and augmented reality paradigms, computational modeling, genetics, human electrophysiology (ERPs, time-frequency), structural and functional neuroimaging, and robotic transcranial magnetic stimulation (Robotic-TMS). It is my long-term goal to identify new neurocognitive targets for treatment development (e.g. substance use disorders, childhood trauma, depression, chemotherapy-induced cognitive impairment, Parkinson’s disease, Alzheimer’s disease).</p>
+            <p class="pi-aff"><span class="k">Affiliations</span><a href="https://sasn.rutgers.edu/travis-baker">Center for Molecular and Behavioral Neuroscience</a> · <a href="https://www.addiction.rutgers.edu/researchers/travis-baker/">Rutgers Addiction Research Center</a> · <a href="https://ints.rutgers.edu/profile/travis-e-baker-phd/">Institute for Nicotine and Tobacco Studies</a> · <a href="https://brainhealthinstitute.rutgers.edu/">Brain Health Institute</a></p>
+            <p class="pi-aff"><span class="k">Profiles</span><a href="https://scholar.google.ca/citations?user=eEuvqpYAAAAJ&amp;hl=en">Google Scholar</a> · <a href="https://www.linkedin.com/in/travis-e-baker-29576564/">LinkedIn</a></p>
+            <p class="muted" style="margin:0">Room 307D, CMBN · travis.e.baker@rutgers.edu</p>
+          </div>
+        </div>
+      </div>
+      <div class="group">
+        <p class="group-h">Postdoctoral fellows</p>
+        <div class="people">
+          <div class="person"><img class="avatar" src="img/hs_dr.jpg" alt="Daniel Robles"><div><h3>Daniel Robles, PhD</h3><p>Leads the lab's NIDA-funded UG3/UH3 trial on restoring reward function in nicotine use disorder. Also studies attention, alpha oscillations and reward in people who use substances.<br><span class="meth">Mobile-EEG, TMS, diffusion weighted imaging</span></p></div></div>
+          <div class="person"><img class="avatar" src="img/hs_js.jpg" alt="Jaleesa Stringfellow-James"><div><h3>Jaleesa Stringfellow-James, PhD</h3><p>Measuring and modulating reward functioning in addiction with TMS.<br><span class="meth">Augmented and virtual reality, EEG, fMRI, EEG-fMRI, machine learning</span></p></div></div>
+        </div>
+      </div>
+      <div class="group">
+        <p class="group-h">PhD students</p>
+        <div class="people">
+          <div class="person"><img class="avatar" src="img/hs_yg.jpg" alt="Yifan Gao"><div><h3>Yifan Gao</h3><p>Understanding the relationship between reward prediction error signals and the reward positivity.<br><span class="meth">Closed-loop EEG-TMS, EEG, computational modeling</span></p></div></div>
+          <div class="person"><img class="avatar" src="img/hs_mz.jpg" alt="Merna Zaki"><div><h3>Merna Zaki</h3><p>Opioid use disorder, reward processing.<br><span class="meth">EEG, TMS</span></p></div></div>
+          <div class="person"><img class="avatar" src="img/hs_mj.jpg" alt="Mallory Jones"><div><h3>Mallory Jones</h3><p>Substance use disorders, rumination, cognitive control.<br><span class="meth">EEG</span></p></div></div>
+          <div class="person"><img class="avatar" src="img/hs_ah.jpg" alt="Anis Hasani"><div><h3>Anis Hasani</h3><p>Reward processing.<br><span class="meth">Closed-loop TMS, EEG</span></p></div></div>
+          <div class="person"><img class="avatar" src="img/hs_sl.jpg" alt="Shuwen Li"><div><h3>Shuwen Li</h3><p>Rotating graduate student. Translating decision-making research between animals and humans.</p></div></div>
+        </div>
+      </div>
+      <div class="group">
+        <p class="group-h">Research staff &amp; students</p>
+        <div class="people">
+          <div class="person"><div class="avatar" aria-hidden="true">BT</div><div><h3>Benjamin Troutman</h3><p>Laboratory/Technical Assistant. Supports the UG3/UH3 nicotine study.</p></div></div>
+          <div class="person"><img class="avatar" src="img/hs_sh.jpg" alt="Soncia Hughes"><div><h3>Soncia Hughes</h3><p>Undergraduate researcher. Development of the reward positivity.</p></div></div>
+          <div class="person"><img class="avatar" src="img/hs_mr.jpg" alt="Mr. Roboto"><div><h3>Mr. Roboto</h3><p>I am interested in precision targeting for brain stimulation.</p></div></div>
+        </div>
+      </div>
+      <div class="group">
+        <p class="group-h">Alumni</p>
+        <p class="alum-h">Graduate students</p>
+        <ul class="grads"><li><div class="grad-ph"><a href="img/grad_02.jpg"><img src="img/grad_02.jpg" alt="Jaleesa Stringfellow-James, PhD at the PhD defense" loading="lazy"></a><a href="img/grad_03.jpg"><img src="img/grad_03.jpg" alt="Jaleesa Stringfellow-James, PhD at the PhD defense" loading="lazy"></a></div><div><b>Jaleesa Stringfellow-James, PhD</b> · PhD August 2025. Dissertation: <a href="https://rucore.libraries.rutgers.edu/rutgers-lib/75354/record/">Neural and behavioral correlates of the reward positivity</a>. Now a postdoctoral fellow in the lab</div></li><li><div class="grad-ph"><a href="img/grad_04.jpg"><img src="img/grad_04.jpg" alt="Malte R. Güth, PhD at the PhD defense" loading="lazy"></a><a href="img/grad_05.jpg"><img src="img/grad_05.jpg" alt="Malte R. Güth, PhD at the PhD defense" loading="lazy"></a></div><div><b>Malte R. Güth, PhD</b> · PhD May 2024. Dissertation: Multimodal imaging and closed-loop brain stimulation of human theta oscillations during spatial navigation. Now a postdoctoral fellow in the <a href="https://opitzlab.umn.edu/people">Opitz Lab</a>, University of Minnesota</div></li><li><div class="grad-ph"><a href="img/grad_00.jpg"><img src="img/grad_00.jpg" alt="Galit Karpov, PhD at the PhD defense" loading="lazy"></a><a href="img/grad_01.jpg"><img src="img/grad_01.jpg" alt="Galit Karpov, PhD at the PhD defense" loading="lazy"></a></div><div><b>Galit Karpov, PhD</b> · PhD August 2024. Dissertation: Effects of childhood maltreatment on adult threat processing. Now a postdoctoral fellow at the <a href="https://fcd.mcw.edu/?faculty/view/name/Galit_Karpov_BS%2C_PhD/id/11425">Medical College of Wisconsin</a></div></li></ul>
+        
+        <p class="alum-h">Postdoctoral fellows</p>
+        <ul class="grads"><li><div class="grad-ph"><a href="img/rp_kathryn.jpg"><img src="img/rp_kathryn.jpg" alt="Kathryn Biernacki in the lab" loading="lazy"></a></div><div><b>Kathryn Biernacki, PhD</b> · Now <a href="https://www.vumc.org/psychiatry/index.php/person/kathryn-biernacki-phd">Research Assistant Professor of Psychiatry and Behavioral Sciences</a>, Vanderbilt University Medical Center</div></li><li><div class="grad-ph"><a href="img/rp_mei.jpg"><img src="img/rp_mei.jpg" alt="Mei-Heng Lin in the lab" loading="lazy"></a></div><div><b>Mei-Heng Lin, PhD</b> · Now in Georgia Tech's Online Master of Science in Analytics (OMSA) program</div></li></ul>
+        <p class="alum-h">Research staff &amp; students</p>
+        <p class="alum-list">Joshua Espinosa-Dick · Cassidy Kidd · Kira Meany · Emily Zhang · Sally Cole · Hassan Elsamna · Seema Parikh · Fernanda Juarez · Neeta Bauer · Pavlina Coleska · Juan Cadavid · Peter Shafeek</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="publications" class="view">
+    <div class="label">Publications</div>
+    <div>
+      <figure class="bear bear-top"><img src="img/moss.jpg" alt="A moss-covered stump in the shape of a sleeping bear"></figure>
+      <h2>Selected publications</h2>
+      <ul class="pubs">
+        <li class="yr">2026</li>
+        <li class="pub"><a href="https://scholar.google.com/scholar?q=%22Threat-related%20gamma%20as%20a%20mechanism%20linking%20childhood%20maltreatment%20and%20adult%20anxiety%22">Threat-related gamma as a mechanism linking childhood maltreatment and adult anxiety</a><span class="au">Karpov G, Baker TE</span><span class="j">Cognitive, Affective, &amp; Behavioral Neuroscience</span>, 1–16</li>
+        <li class="pub"><a href="https://doi.org/10.1111/psyp.70308">The reward positivity tracks positive reward prediction errors from feedback to cues during reinforcement learning</a><span class="au">Gao Y, Wilson R, Karpov G, Baker TE</span><span class="j">Psychophysiology</span>, 63(5), e70308</li>
+        <li class="pub"><a href="https://doi.org/10.1016/j.ijpsycho.2026.113460">Right posterior theta during encoding predicts memory performance in virtual navigation</a><span class="au">Güth MR, Baker TE</span><span class="j">International Journal of Psychophysiology</span>, 113460</li>
+        <li class="pub"><a href="https://scholar.google.com/scholar?q=%22Safety%20and%20feasibility%20of%20accelerated%20deep%20transcranial%20magnetic%20stimulation%20for%20stimulant%20use%20disorder%3A%20A%20pilot%20study%22">Safety and feasibility of accelerated deep transcranial magnetic stimulation for stimulant use disorder: A pilot study</a><span class="au">Richard M, Bousseau E, Jodoin VD, Guibene E, Blumberger DM, … Baker TE</span><span class="j">Psychiatry Research</span>, 117538</li>
+        <li class="pub"><a href="https://scholar.google.com/scholar?q=%22Pilot%20randomized%20trial%20of%20intermittent%20theta-burst%20stimulation%20versus%20H-coil%20transcranial%20magnetic%20stimulation%20for%20treatment-resistant%20depression%22">Pilot randomized trial of intermittent theta-burst stimulation versus H-coil transcranial magnetic stimulation for treatment-resistant depression</a><span class="au">Jodoin VD, Bousseau E, Trottier-Duclos F, Jutras-Aswad D, Lespérance F, … Baker TE</span><span class="j">Psychiatry Research</span>, 117274</li>
+        <li class="yr">2025</li>
+        <li class="pub"><a href="https://scholar.google.com/scholar?q=%22Toward%20inclusive%2C%20evidence-based%20rTMS%20care%20for%20patients%20with%20co-occurring%20substance%20use%20disorders%22">Toward inclusive, evidence-based rTMS care for patients with co-occurring substance use disorders</a><span class="au">Steele VR, Addicott MA, Addolorato G, Baker TE, Biernacki K, Bonci A, et al.</span><span class="j">American Journal of Psychiatry</span>, 182(12), 1095–1096</li>
+        <li class="pub"><a href="https://doi.org/10.1162/IMAG.a.105">Right posterior theta reflects human parahippocampal phase resetting by salient cues during goal-directed navigation</a><span class="au">Güth MR, Reid A, Zhang Y, Huntgeburth SC, Mill RD, Dagher A, Kerns K, Holroyd CB, Petrides M, Cole MW, Baker TE</span><span class="j">Imaging Neuroscience</span>, 3, IMAG.a.105</li>
+        <li class="pub"><a href="https://doi.org/10.1038/s41398-025-03569-z">Blunted anterior midcingulate response to reward in opioid users is normalized by prefrontal transcranial magnetic stimulation</a><span class="au">Biernacki K, Goldstein RZ, Güth MR, Alia-Klein N, Cole S, Ray S, Baker TE</span><span class="j">Translational Psychiatry</span>, 15, 340</li>
+        <li class="pub"><a href="https://www.medrxiv.org/content/10.1101/2025.09.21.25335559.abstract">Effectiveness of noninvasive brain stimulation protocols on drug craving and consumption/relapse in substance use disorders: A systematic review and meta-analysis</a><span class="badge">Preprint</span><span class="au">Soleimani G, Souki A, Honari S, Baker TE, Brunoni AR, Ebrahimi M, Garza-Villarreal EA, George TP, Goldstein RZ, Jha MK, et al.</span><span class="j">medRxiv</span>, 2025.09.21.25335559</li>
+        <li class="pub"><a href="https://escholarship.org/uc/item/4sb936m3">Linking strategies to think aloud in a stochastic learning task</a><span class="au">Zhang Z, Xie H, Baker TE, Peters M, Wilson RC</span><span class="j">Proceedings of the Annual Meeting of the Cognitive Science Society</span>, 47</li>
+        <li class="yr">2024</li>
+        <li class="pub"><a href="https://doi.org/10.1523/ENEURO.0372-23.2024">Recording neural reward signals in a naturalistic operant task using mobile-EEG and augmented reality</a><span class="au">Stringfellow JS, Liran O, Lin MH, Baker TE</span><span class="j">eNeuro</span>, 11(8), ENEURO.0372-23.2024</li>
+        <li class="pub"><a href="https://doi.org/10.1111/psyp.14551">Oscillatory correlates of threat imminence during virtual navigation</a><span class="au">Karpov G, Lin MH, Headley DB, Baker TE</span><span class="j">Psychophysiology</span>, 61(7), e14551</li>
+        <li class="yr">2023</li>
+        <li class="pub"><a href="https://onlinelibrary.wiley.com/doi/10.1111/ejn.15905">Prefrontal transcranial magnetic stimulation boosts response vigour during reinforcement learning in healthy adults</a><span class="au">Biernacki K, Myers CE, Cole S, Cavanagh JF, Baker TE</span><span class="j">European Journal of Neuroscience</span>, 57(4), 680–691</li>
+        <li class="pub"><a href="https://doi.org/10.1016/j.neuroimage.2023.120183">Development and validation of an fMRI-informed EEG model of reward-related ventral striatum activation</a><span class="au">Singer N, Poker G, Dunsky-Moran N, Nemni S, Balter SR, Doron M, … Baker TE, et al.</span><span class="j">NeuroImage</span>, 276, 120183</li>
+        <li class="pub"><a href="https://scholar.google.com/scholar?q=%22Theta%20burst%20stimulation%20of%20the%20hyperdirect%20pathway%20boosts%20inhibitory%20control%20and%20reduces%20craving%20and%20smoking%20in%20nicotine-dependent%20adults%22">Theta burst stimulation of the hyperdirect pathway boosts inhibitory control and reduces craving and smoking in nicotine-dependent adults</a><span class="badge">Commentary</span><span class="au">Baker TE, Robles D</span><span class="j">Biological Psychiatry: Cognitive Neuroscience and Neuroimaging</span>, 8(11), 1072–1074</li>
+        <li class="pub"><a href="https://www.frontiersin.org/journals/neuroscience/articles/10.3389/fnins.2023.1337773/full">New discoveries in the field of brain stimulation and addiction disorders</a><span class="au">Kang D, Baker TE, Steele VR</span><span class="j">Frontiers in Neuroscience</span>, 17, 1337773</li>
+      </ul>
+      <details>
+        <summary>Earlier publications, 2008–2022</summary>
+        <ul class="pubs">
+        <li class="yr">2022</li>
+        <li class="pub"><a href="https://www.nature.com/articles/s41598-022-05955-9">Scalp recorded theta activity is modulated by reward, direction, and speed during virtual navigation in freely moving humans</a><span class="au">Lin MH, Liran O, Bauer N, Baker TE</span><span class="j">Scientific Reports</span>, 12, 2041</li>
+        <li class="pub"><a href="https://www.brainstimjrnl.com/article/S1935-861X(22)00030-4/fulltext">A novel application of an adaptive filter to dissociate the effects of TMS on neural excitability and trial-to-trial latency jitter in event-related potentials</a><span class="au">Lin MH, Baker TE</span><span class="j">Brain Stimulation</span>, 15, 388–390</li>
+        <li class="yr">2020</li>
+        <li class="pub"><a href="https://www.sciencedirect.com/science/article/abs/pii/S0167876020302208">Recovery of reward function in problematic substance users using a combination of robotics, electrophysiology, and TMS</a><span class="au">Biernacki K, Lin MH, Baker TE</span><span class="j">International Journal of Psychophysiology</span>, 158, 288–298</li>
+        <li class="pub"><a href="https://www.sciencedirect.com/science/article/abs/pii/S2451902220301634">Beyond the motor cortex: Theta burst stimulation of the anterior midcingulate cortex</a><span class="au">Baker TE, Lin MH, Güth MR, Biernacki K, Parikh S</span><span class="j">Biological Psychiatry: Cognitive Neuroscience and Neuroimaging</span>, 5(11), 1052–1060</li>
+        <li class="pub"><a href="https://academic.oup.com/ntr/article-abstract/22/2/164/5047327">Smoking decisions: Altered reinforcement learning signals induced by nicotine state</a><span class="au">Baker TE, Zeighami Y, Dagher A, Holroyd CB</span><span class="j">Nicotine &amp; Tobacco Research</span>, 22(2), 164–171</li>
+        <li class="yr">2019</li>
+        <li class="pub"><a href="https://nottingham-repository.worktribe.com/output/939352">Modulation of orbitofrontal-striatal reward activity by dopaminergic functional polymorphisms contributes to a predisposition to alcohol misuse in early adolescence</a><span class="au">Baker TE, Castellanos-Ryan N, Schumann G, Cattrell A, Flor H, Nees F, … Conrod PJ</span><span class="j">Psychological Medicine</span>, 49(5), 801–810</li>
+        <li class="pub"><a href="https://www.sciencedirect.com/science/article/abs/pii/S0304394018308164">A novel virtual plus-maze for studying electrophysiological correlates of spatial reorientation</a><span class="au">Torok A, Kóbor A, Honbolygó F, Baker TE</span><span class="j">Neuroscience Letters</span>, 694, 220–224</li>
+        <li class="pub"><a href="https://www.nature.com/articles/s41598-018-38417-2">Social context effects on error-related brain activity are dependent on interpersonal and achievement-related traits</a><span class="au">García Alanis JC, Baker TE, Peper M, Chavanon ML</span><span class="j">Scientific Reports</span>, 9, 1728</li>
+        <li class="yr">2018</li>
+        <li class="pub"><a href="https://www.pnas.org/content/115/37/9312">Neurobehavioral correlates of obesity are largely heritable</a><span class="au">Vainik U, Baker TE, Dadar M, Zeighami Y, Michaud A, Zhang Y, et al.</span><span class="j">PNAS</span>, 115(37), 9312–9317</li>
+        <li class="pub"><a href="https://www.nature.com/articles/s41467-017-02416-0">Network connectivity determines cortical thinning in early Parkinson&#x27;s disease progression</a><span class="au">Yau Y, Zeighami Y, Baker TE, Larcher K, Vainik U, Dadar M, Fonov VS, et al.</span><span class="j">Nature Communications</span>, 9, 12</li>
+        <li class="yr">2017</li>
+        <li class="pub"><a href="https://www.sciencedirect.com/science/article/pii/S0006322317300847">Reversing the atypical valuation of drug and nondrug rewards in smokers using multimodal neuroimaging</a><span class="au">Baker TE, Lesperance P, Tucholka A, Potvin S, Larcher K, Zhang Y, Jutras-Aswad D, Conrod P</span><span class="j">Biological Psychiatry</span>, 82(11), 819–827</li>
+        <li class="pub"><a href="https://www.sciencedirect.com/science/article/pii/S0028393217300830">It&#x27;s all about timing: An electrophysiological examination of feedback-based learning with immediate and delayed feedback</a><span class="au">Arbel Y, Hong L, Baker TE, Holroyd CB</span><span class="j">Neuropsychologia</span>, 99, 179–186</li>
+        <li class="yr">2016</li>
+        <li class="pub"><a href="https://bmcpsychiatry.biomedcentral.com/articles/10.1186/s12888-016-1148-3">Effects of delaying binge drinking on adolescent brain development: A longitudinal neuroimaging study</a><span class="au">Bourque J, Baker TE, Dagher A, Evans AC, Garavan H, Leyton M, et al.</span><span class="j">BMC Psychiatry</span>, 16, 445</li>
+        <li class="pub"><a href="https://www.sciencedirect.com/science/article/pii/S0167876016301210">Oscillatory profiles of positive, negative and neutral feedback stimuli during adaptive decision making</a><span class="au">Li P, Baker TE, Warren C, Li H</span><span class="j">International Journal of Psychophysiology</span>, 107, 37–43</li>
+        <li class="pub"><a href="https://doi.org/10.1162/jocn_a_00905">Reward sensitivity of ACC as an intermediate phenotype between DRD4-521T and substance misuse</a><span class="au">Baker TE, Stockwell T, Barnes G, Haesevoets R, Holroyd CB</span><span class="j">Journal of Cognitive Neuroscience</span>, 28(3), 460–471</li>
+        <li class="pub"><a href="https://www.sciencedirect.com/science/article/pii/S1388245715010767">Atypical valuation of monetary and cigarette rewards in substance dependent smokers</a><span class="au">Baker TE, Wood JMA, Holroyd CB</span><span class="j">Clinical Neurophysiology</span>, 127(2), 1358–1365</li>
+        <li class="yr">2015</li>
+        <li class="pub"><a href="https://www.nature.com/articles/srep09063">Rightward-biased hemodynamic response of the parahippocampal system during virtual navigation</a><span class="au">Baker TE, Umemoto A, Krawitz A, Holroyd CB</span><span class="j">Scientific Reports</span>, 5, 9063</li>
+        <li class="pub"><a href="https://scholar.google.com/scholar?q=%22Of%20mice%20and%20wo/men%3A%20Transdisciplinarity%20in%20the%20laboratory%22">Of mice and wo/men: Transdisciplinarity in the laboratory</a><span class="badge">Book chapter</span><span class="au">Baker TE, Lam V, Lan N, Uban KA, Weinberg J</span><span class="j">Transforming Addiction: Gender, Trauma, Transdisciplinarity</span>, 50–68</li>
+        <li class="pub"><a href="https://scholar.google.com/scholar?q=%22Impaired%20RPE%20signaling%20in%20substance%20dependence%3A%20Comment%20on%20Parvaz%20et%20al.%22">Impaired RPE signaling in substance dependence: Comment on Parvaz et al.</a><span class="badge">Letter</span><span class="au">Baker TE, Holroyd CB</span><span class="j">Journal of Neuroscience</span></li>
+        <li class="yr">2013</li>
+        <li class="pub"><a href="https://www.sciencedirect.com/science/article/pii/S0301051113001221">The topographical N170: Electrophysiological evidence of a neural mechanism for human spatial navigation</a><span class="au">Baker TE, Holroyd CB</span><span class="j">Biological Psychology</span>, 94(1), 90–105</li>
+        <li class="pub"><a href="https://link.springer.com/article/10.3758/s13415-013-0164-8">Constraints on decision making: Implications from genetics, personality, and addiction</a><span class="au">Baker TE, Stockwell T, Holroyd CB</span><span class="j">Cognitive, Affective, &amp; Behavioral Neuroscience</span>, 13(3), 417–436</li>
+        <li class="yr">2012</li>
+        <li class="pub"><a href="https://scholar.google.com/scholar?q=%22ERPs%20and%20EEG%20oscillations%2C%20best%20friends%20forever%3A%20Comment%20on%20Cohen%20et%20al.%22">ERPs and EEG oscillations, best friends forever: Comment on Cohen et al.</a><span class="badge">Letter</span><span class="au">Holroyd CB, HajiHosseini A, Baker TE</span><span class="j">Trends in Cognitive Sciences</span>, 16(4), 192</li>
+        <li class="pub"><a href="https://dspace.library.uvic.ca/handle/1828/4265">Genetics, drugs, and cognitive control: Uncovering individual differences in substance dependence</a><span class="badge">Dissertation</span><span class="au">Baker TE</span><span class="j">PhD dissertation, University of Victoria</span></li>
+        <li class="yr">2011</li>
+        <li class="pub"><a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1369-1600.2010.00243.x">Individual differences in substance dependence: At the intersection of brain, behaviour and cognition</a><span class="au">Baker TE, Stockwell T, Barnes G, Holroyd CB</span><span class="j">Addiction Biology</span>, 16(3), 458–466</li>
+        <li class="pub"><a href="https://www.sciencedirect.com/science/article/pii/S0301051111000160">Dissociated roles of the anterior cingulate cortex in reward and conflict processing as revealed by the feedback error-related negativity and N200</a><span class="au">Baker TE, Holroyd CB</span><span class="j">Biological Psychology</span>, 87(1), 25–34</li>
+        <li class="yr">2009</li>
+        <li class="pub"><a href="https://academic.oup.com/cercor/article/19/8/1708/413785">Which way do I go? Neural activation in response to feedback and spatial processing in a virtual T-maze</a><span class="au">Baker TE, Holroyd CB</span><span class="j">Cerebral Cortex</span>, 19(8), 1708–1722</li>
+        <li class="yr">2008</li>
+        <li class="pub"><a href="https://www.sciencedirect.com/science/article/pii/S0028393208000766">Electrophysiological evidence of atypical motivation and reward processing in children with attention-deficit hyperactivity disorder</a><span class="au">Holroyd CB, Baker TE, Kerns KA, Müller U</span><span class="j">Neuropsychologia</span>, 46(8), 2234–2242</li>
+        </ul>
+      </details>
+      <p class="muted" style="margin-top:22px;font-size:.9rem">Full list, including conference abstracts, on <a href="https://scholar.google.ca/citations?user=eEuvqpYAAAAJ&amp;hl=en">Google Scholar</a>.</p>
+    </div>
+  </section>
+
+  <section id="news" class="view">
+    <div class="label">News</div>
+    <div>
+      <h2>Lab news</h2>
+      <ul class="news">
+        <li><time datetime="2026-11">Nov 2026</time><div>Galit Karpov's paper in <i>Cognitive, Affective, &amp; Behavioral Neuroscience</i> identifies threat-related gamma activity as a mechanism linking childhood maltreatment and adult anxiety.</div></li>
+        <li><time datetime="2026-09">Sep 2026</time><div>Malte Güth's new paper in the <a href="https://doi.org/10.1016/j.ijpsycho.2026.113460"><i>International Journal of Psychophysiology</i></a> shows that right posterior theta during encoding predicts how well people remember locations in virtual navigation.</div></li>
+        <li><time datetime="2026-05">May 2026</time><div>Yifan Gao's paper in <i>Psychophysiology</i> shows the reward positivity moves from feedback to predictive cues as people learn, as temporal difference learning predicts.</div></li>
+        <li><time datetime="2025-09">Sep 2025</time><div>New in <i>Translational Psychiatry</i>: prefrontal TMS normalizes the blunted midcingulate reward response in people who use opioids.</div></li>
+        <li><time datetime="2025-09">Sep 2025</time><div>Malte Güth's EEG-MEG and simultaneous EEG-fMRI work linking right posterior theta to the parahippocampal gyrus is out in <i>Imaging Neuroscience</i>.</div></li>
+        <li><time datetime="2024-08">Aug 2024</time><div>Congratulations to Dr. Malte Güth (May) and Dr. Galit Karpov (August) on completing their PhDs.</div></li>
+        <li><time datetime="2023">2023</time><div><a href="https://addiction.rutgers.edu/neuroscientist-travis-baker-receives-cutting-edge-basic-research-award-from-nih/">NIDA Cutting-Edge Basic Research Award</a> (R21) for closed-loop neuromodulation of the brain reward system, with co-investigator Drew Headley.</div></li>
+        <li><time datetime="2023">2023</time><div><a href="https://sasn.rutgers.edu/news-events/news/travis-baker-wins-scialog-award-devise-new-methods-study-high-level-cognition">Scialog: Molecular Basis of Cognition award</a> to develop new methods for studying high-level cognition.</div></li>
+        <li><time datetime="2022">2022</time><div><a href="https://research.rutgers.edu/work-research-development/busch-biomedical-grant-program/previous-awardees">Busch Biomedical Grant</a> to target memory circuits with noninvasive brain stimulation for Alzheimer's disease.</div></li>
+        <li><time datetime="2021">2021</time><div><a href="https://sasn.rutgers.edu/news-events/news/neuroscientist-travis-baker-wins-25-million-grant-treat-substance-abuse-disorder">$2.5 million NIH grant</a> to develop brain-based interventions for substance use disorders.</div></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="lab-life" class="view">
+    <div class="label">Lab life</div>
+    <div>
+      <h2>Lab life</h2>
+      <p>Conferences, awards, holiday parties and the occasional hockey game. A few moments from the lab since it opened in 2016.</p>
+      <h3 class="life-h">Conferences</h3>
+      <ol class="life">
+        <li><time>Nov 2026</time><div><h3>34th Annual CMBN Symposium, Rutgers–Newark</h3><p>Congratulations to Mallory Jones on a great talk. Thanks also to Merna Zaki, Soncia Hughes, Jaleesa Stringfellow, Shuwen Li and Anis Hasani for representing the Baker Lab with excellent posters.</p><details class="photos"><summary>View photos (4)</summary><div class="mosaic"><a class="big" href="img/cmbn_10.jpg"><img src="img/cmbn_10.jpg" alt="Baker Lab posters at the 2026 CMBN Symposium" loading="lazy"></a><a class="port" href="img/cmbn_07.jpg"><img src="img/cmbn_07.jpg" alt="Baker Lab posters at the 2026 CMBN Symposium" loading="lazy"></a><a class="port" href="img/cmbn_09.jpg"><img src="img/cmbn_09.jpg" alt="Baker Lab posters at the 2026 CMBN Symposium" loading="lazy"></a><a class="port" href="img/cmbn_08.jpg"><img src="img/cmbn_08.jpg" alt="Baker Lab posters at the 2026 CMBN Symposium" loading="lazy"></a></div></details></div></li>
+        <li><time>Oct 2026</time><div><h3>SPR, Halifax</h3><p>Always great to reconnect and represent the Baker Lab at the 66th Annual Meeting of the Society for Psychophysiological Research in Halifax.</p><details class="photos"><summary>View photos (7)</summary><div class="mosaic"><a class="big" href="img/spr_04.jpg"><img src="img/spr_04.jpg" alt="Baker Lab at SPR 2026 in Halifax" loading="lazy"></a><a class="land" href="img/spr_01.jpg"><img src="img/spr_01.jpg" alt="Baker Lab at SPR 2026 in Halifax" loading="lazy"></a><a class="port" href="img/spr_07.jpg"><img src="img/spr_07.jpg" alt="Baker Lab at SPR 2026 in Halifax" loading="lazy"></a><a class="port" href="img/spr_02.jpg"><img src="img/spr_02.jpg" alt="Baker Lab at SPR 2026 in Halifax" loading="lazy"></a><a class="port" href="img/spr_03.jpg"><img src="img/spr_03.jpg" alt="Baker Lab at SPR 2026 in Halifax" loading="lazy"></a><a class="port" href="img/spr_05.jpg"><img src="img/spr_05.jpg" alt="Baker Lab at SPR 2026 in Halifax" loading="lazy"></a><a class="port" href="img/spr_06.jpg"><img src="img/spr_06.jpg" alt="Baker Lab at SPR 2026 in Halifax" loading="lazy"></a></div></details></div></li>
+        <li><time>Jul 2026</time><div><h3>NYC Neuromodulation Conference, 2024 &amp; 2026</h3><p>Presenting our latest TMS work at the NYC Neuromodulation Conference, in 2024 and again in 2026.</p><details class="photos"><summary>View photos (19)</summary><div class="mosaic"><a class="big" href="img/nyc_11.jpg"><img src="img/nyc_11.jpg" alt="Baker Lab at the NYC Neuromodulation Conference" loading="lazy"></a><a class="port" href="img/nyc_13.jpg"><img src="img/nyc_13.jpg" alt="Baker Lab at the NYC Neuromodulation Conference" loading="lazy"></a><a class="land" href="img/nyc_14.jpg"><img src="img/nyc_14.jpg" alt="Baker Lab at the NYC Neuromodulation Conference" loading="lazy"></a><a class="port" href="img/nyc_15.jpg"><img src="img/nyc_15.jpg" alt="Baker Lab at the NYC Neuromodulation Conference" loading="lazy"></a><a class="land" href="img/nyc_16.jpg"><img src="img/nyc_16.jpg" alt="Baker Lab at the NYC Neuromodulation Conference" loading="lazy"></a><a class="port" href="img/nyc_17.jpg"><img src="img/nyc_17.jpg" alt="Baker Lab at the NYC Neuromodulation Conference" loading="lazy"></a><a class="port" href="img/nyc_18.jpg"><img src="img/nyc_18.jpg" alt="Baker Lab at the NYC Neuromodulation Conference" loading="lazy"></a><a class="port" href="img/nyc_00.jpg"><img src="img/nyc_00.jpg" alt="Baker Lab at the NYC Neuromodulation Conference" loading="lazy"></a><a class="port" href="img/nyc_01.jpg"><img src="img/nyc_01.jpg" alt="Baker Lab at the NYC Neuromodulation Conference" loading="lazy"></a><a class="land" href="img/nyc_02.jpg"><img src="img/nyc_02.jpg" alt="Baker Lab at the NYC Neuromodulation Conference" loading="lazy"></a><a class="land" href="img/nyc_03.jpg"><img src="img/nyc_03.jpg" alt="Baker Lab at the NYC Neuromodulation Conference" loading="lazy"></a><a class="land" href="img/nyc_04.jpg"><img src="img/nyc_04.jpg" alt="Baker Lab at the NYC Neuromodulation Conference" loading="lazy"></a><a class="port" href="img/nyc_05.jpg"><img src="img/nyc_05.jpg" alt="Baker Lab at the NYC Neuromodulation Conference" loading="lazy"></a><a class="port" href="img/nyc_06.jpg"><img src="img/nyc_06.jpg" alt="Baker Lab at the NYC Neuromodulation Conference" loading="lazy"></a><a class="land" href="img/nyc_07.jpg"><img src="img/nyc_07.jpg" alt="Baker Lab at the NYC Neuromodulation Conference" loading="lazy"></a><a class="port" href="img/nyc_08.jpg"><img src="img/nyc_08.jpg" alt="Baker Lab at the NYC Neuromodulation Conference" loading="lazy"></a><a class="port" href="img/nyc_09.jpg"><img src="img/nyc_09.jpg" alt="Baker Lab at the NYC Neuromodulation Conference" loading="lazy"></a><a class="port" href="img/nyc_10.jpg"><img src="img/nyc_10.jpg" alt="Baker Lab at the NYC Neuromodulation Conference" loading="lazy"></a><a class="land" href="img/nyc_12.jpg"><img src="img/nyc_12.jpg" alt="Baker Lab at the NYC Neuromodulation Conference" loading="lazy"></a></div></details></div></li>
+        <li><time>May 2026</time><div><h3>FAWG, Rutgers</h3><p>The lab presenting posters at FAWG at Rutgers.</p><details class="photos"><summary>View photos (6)</summary><div class="mosaic"><a class="big" href="img/fawg_00.jpg"><img src="img/fawg_00.jpg" alt="Baker Lab posters at FAWG 2026, Rutgers" loading="lazy"></a><a class="land" href="img/fawg_01.jpg"><img src="img/fawg_01.jpg" alt="Baker Lab posters at FAWG 2026, Rutgers" loading="lazy"></a><a class="port" href="img/fawg_02.jpg"><img src="img/fawg_02.jpg" alt="Baker Lab posters at FAWG 2026, Rutgers" loading="lazy"></a><a class="port" href="img/fawg_03.jpg"><img src="img/fawg_03.jpg" alt="Baker Lab posters at FAWG 2026, Rutgers" loading="lazy"></a><a class="port" href="img/fawg_04.jpg"><img src="img/fawg_04.jpg" alt="Baker Lab posters at FAWG 2026, Rutgers" loading="lazy"></a><a class="land" href="img/fawg_05.jpg"><img src="img/fawg_05.jpg" alt="Baker Lab posters at FAWG 2026, Rutgers" loading="lazy"></a></div></details></div></li>
+                <li><time>Sep 2022</time><div><h3>SPR, Vancouver</h3><p>Posters and dinner with friends at the Society for Psychophysiological Research meeting in Vancouver.</p><details class="photos"><summary>View photos (2)</summary><div class="mosaic"><a class="land" href="img/sprvan_00.jpg"><img src="img/sprvan_00.jpg" alt="Baker Lab at SPR 2022 in Vancouver" loading="lazy"></a><a class="land" href="img/sprvan_01.jpg"><img src="img/sprvan_01.jpg" alt="Baker Lab at SPR 2022 in Vancouver" loading="lazy"></a></div></details></div></li>
+        <li><time>Dec 2021</time><div><h3>BHI Symposium, Piscataway</h3><p>Masked and distanced, Malte receives the best poster award at the 7th Annual Rutgers Brain Health Institute Symposium.</p><details class="photos"><summary>View photos (1)</summary><div class="mosaic"><a class="land" href="img/bhi_2021.jpg"><img src="img/bhi_2021.jpg" alt="Malte Güth with his best poster award at the 2021 Rutgers Brain Health Institute Symposium" loading="lazy"></a></div></details></div></li>
+        <li><time>Sep 2019</time><div><h3>SPR, Washington DC</h3><p>The lab brings seven posters and talks to the 59th Annual Meeting of the Society for Psychophysiological Research.</p></div></li>
+      </ol>
+      <h3 class="life-h">Lab socials</h3>
+      <ol class="life soc-line"><li><details class="soc-d"><summary><h3>Newark outings</h3></summary><div class="mosaic"><a class="big" href="img/newark_00.jpg"><img src="img/newark_00.jpg" alt="Baker Lab outing in Newark" loading="lazy"></a><a class="port" href="img/newark_01.jpg"><img src="img/newark_01.jpg" alt="Baker Lab outing in Newark" loading="lazy"></a><a class="land" href="img/newark_02.jpg"><img src="img/newark_02.jpg" alt="Baker Lab outing in Newark" loading="lazy"></a><a class="land" href="img/newark_03.jpg"><img src="img/newark_03.jpg" alt="Baker Lab outing in Newark" loading="lazy"></a><a class="land" href="img/newark_04.jpg"><img src="img/newark_04.jpg" alt="Baker Lab outing in Newark" loading="lazy"></a><a class="port" href="img/newark_05.jpg"><img src="img/newark_05.jpg" alt="Baker Lab outing in Newark" loading="lazy"></a><a class="land" href="img/newark_06.jpg"><img src="img/newark_06.jpg" alt="Baker Lab outing in Newark" loading="lazy"></a><a class="port" href="img/newark_07.jpg"><img src="img/newark_07.jpg" alt="Baker Lab outing in Newark" loading="lazy"></a><a class="port" href="img/newark_08.jpg"><img src="img/newark_08.jpg" alt="Baker Lab outing in Newark" loading="lazy"></a><a class="port" href="img/newark_09.jpg"><img src="img/newark_09.jpg" alt="Baker Lab outing in Newark" loading="lazy"></a><a class="land" href="img/newark_10.jpg"><img src="img/newark_10.jpg" alt="Baker Lab outing in Newark" loading="lazy"></a><a class="port" href="img/newark_13.jpg"><img src="img/newark_13.jpg" alt="Baker Lab outing in Newark" loading="lazy"></a><a class="land" href="img/newark_14.jpg"><img src="img/newark_14.jpg" alt="Baker Lab outing in Newark" loading="lazy"></a><a class="port" href="img/newark_15.jpg"><img src="img/newark_15.jpg" alt="Baker Lab outing in Newark" loading="lazy"></a></div></details></li><li><details class="soc-d"><summary><h3>Christmas</h3></summary><div class="mosaic"><a class="big" href="img/xmas_00.jpg"><img src="img/xmas_00.jpg" alt="Baker Lab holiday party" loading="lazy"></a><a class="land" href="img/xmas_01.jpg"><img src="img/xmas_01.jpg" alt="Baker Lab holiday party" loading="lazy"></a><a class="port" href="img/xmas_02.jpg"><img src="img/xmas_02.jpg" alt="Baker Lab holiday party" loading="lazy"></a><a class="port" href="img/xmas_03.jpg"><img src="img/xmas_03.jpg" alt="Baker Lab holiday party" loading="lazy"></a><a class="port" href="img/xmas_04.jpg"><img src="img/xmas_04.jpg" alt="Baker Lab holiday party" loading="lazy"></a><a class="land" href="img/xmas_05.jpg"><img src="img/xmas_05.jpg" alt="Baker Lab holiday party" loading="lazy"></a><a class="port" href="img/xmas_06.jpg"><img src="img/xmas_06.jpg" alt="Baker Lab holiday party" loading="lazy"></a><a class="land" href="img/xmas_07.jpg"><img src="img/xmas_07.jpg" alt="Baker Lab holiday party" loading="lazy"></a><a class="land" href="img/xmas_08.jpg"><img src="img/xmas_08.jpg" alt="Baker Lab holiday party" loading="lazy"></a><a class="land" href="img/xmas_09.jpg"><img src="img/xmas_09.jpg" alt="Baker Lab holiday party" loading="lazy"></a><a class="port" href="img/xmas_10.jpg"><img src="img/xmas_10.jpg" alt="Baker Lab holiday party" loading="lazy"></a></div></details></li><li><details class="soc-d"><summary><h3>Halloween</h3></summary><div class="mosaic"><a class="big" href="img/hall_00.jpg"><img src="img/hall_00.jpg" alt="Halloween in the Baker Lab" loading="lazy"></a><a class="land" href="img/hall_01.jpg"><img src="img/hall_01.jpg" alt="Halloween in the Baker Lab" loading="lazy"></a><a class="port" href="img/hall_02.jpg"><img src="img/hall_02.jpg" alt="Halloween in the Baker Lab" loading="lazy"></a></div></details></li><li><details class="soc-d"><summary><h3>Backyard BBQ</h3></summary><div class="mosaic"><a class="big" href="img/bbq_00.jpg"><img src="img/bbq_00.jpg" alt="Baker Lab backyard BBQ" loading="lazy"></a><a class="land" href="img/bbq_01.jpg"><img src="img/bbq_01.jpg" alt="Baker Lab backyard BBQ" loading="lazy"></a><a class="land" href="img/bbq_02.jpg"><img src="img/bbq_02.jpg" alt="Baker Lab backyard BBQ" loading="lazy"></a><a class="port" href="img/bbq_03.jpg"><img src="img/bbq_03.jpg" alt="Baker Lab backyard BBQ" loading="lazy"></a></div></details></li><li><details class="soc-d"><summary><h3>Celebrations</h3></summary><div class="mosaic"><a class="big" href="img/celeb_00.jpg"><img src="img/celeb_00.jpg" alt="Baker Lab celebration" loading="lazy"></a><a class="port" href="img/celeb_01.jpg"><img src="img/celeb_01.jpg" alt="Baker Lab celebration" loading="lazy"></a><a class="port" href="img/celeb_02.jpg"><img src="img/celeb_02.jpg" alt="Baker Lab celebration" loading="lazy"></a><a class="land" href="img/celeb_03.jpg"><img src="img/celeb_03.jpg" alt="Baker Lab celebration" loading="lazy"></a><a class="port" href="img/celeb_04.jpg"><img src="img/celeb_04.jpg" alt="Baker Lab celebration" loading="lazy"></a><a class="land" href="img/celeb_05.jpg"><img src="img/celeb_05.jpg" alt="Baker Lab celebration" loading="lazy"></a><a class="land" href="img/celeb_06.jpg"><img src="img/celeb_06.jpg" alt="Baker Lab celebration" loading="lazy"></a><a class="port" href="img/celeb_07.jpg"><img src="img/celeb_07.jpg" alt="Baker Lab celebration" loading="lazy"></a><a class="port" href="img/celeb_08.jpg"><img src="img/celeb_08.jpg" alt="Baker Lab celebration" loading="lazy"></a><a class="port" href="img/celeb_09.jpg"><img src="img/celeb_09.jpg" alt="Baker Lab celebration" loading="lazy"></a></div></details></li></ol>
+    </div>
+  </section>
+
+  <section id="participate" class="view">
+    <div class="label">Participate</div>
+    <div>
+      <h2>Take part in our research</h2>
+      <p>If you are interested in participating in our research, or have questions about our research or research positions available, please get in touch. We look forward to hearing from you!</p>
+      <div class="study">
+        <h3>Modulating neural mechanisms of reward processing in tobacco users</h3>
+        <p>We are looking for adults who smoke and want to cut down or quit, for a study of how the brain processes reward in tobacco users.</p>
+        <div class="study-grid">
+          <div>
+            <p class="k">What's involved</p>
+            <ul>
+              <li>One MRI brain scan at the Rutgers Brain Imaging Center (lying still in a narrow tube for up to 60 minutes)</li>
+              <li>Brain activity recordings (EEG) while you complete computerized tasks</li>
+              <li>15 sessions of transcranial magnetic stimulation (TMS), a safe, non-invasive brain stimulation technique, Monday to Friday over 3 weeks</li>
+              <li>Brief questionnaires at each visit</li>
+              <li>Follow-up phone calls at 1 week and 1 month</li>
+            </ul>
+          </div>
+          <div>
+            <p class="k">You may be eligible if you</p>
+            <ul>
+              <li>Are 18 to 60 years old</li>
+              <li>Smoke 10 or more cigarettes per day</li>
+              <li>Are motivated to reduce or quit smoking</li>
+              <li>Can come in daily over 3 consecutive weeks</li>
+              <li>Have no history of seizures or metal implants</li>
+            </ul>
+          </div>
+        </div>
+        <dl class="facts">
+          <div><dt>Time</dt><dd>20 sessions of 1–2 hours over 1–2 months (about 25–35 hours in total)</dd></div>
+          <div><dt>Compensation</dt><dd>$25/hour plus bonuses, $850–$1,000 in total</dd></div>
+          <div><dt>Location</dt><dd>Center for Molecular and Behavioral Neuroscience, Rutgers–Newark</dd></div>
+        </dl>
+        <p style="margin:0">To learn more or check whether you're eligible, contact our study team: <b>973-353-0893</b> · <b>cognitivestudy@newark.rutgers.edu</b></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="view">
+    <div class="label">Contact</div>
+    <div>
+      <h2>Find us</h2>
+      <div class="contactgrid">
+        <div><span class="k">Email</span><span id="lab-email">travis.e.baker@rutgers.edu</span><button class="copy" type="button" id="copy-email" data-target="lab-email">Copy</button></div>
+        <div><span class="k">Address</span>Center for Molecular and Behavioral Neuroscience<br>197 University Avenue, Room 307D<br>Newark, NJ 07102<br><a href="https://maps.google.com/?q=197+University+Avenue+Newark+NJ+07102">Open in Maps</a></div>
+        <div><span class="k">Join the lab</span>Prospective PhD students apply through the <a href="https://bns.rutgers.edu/">Behavioral and Neural Sciences</a> program. Postdocs and research assistants, email Travis directly.</div>
+      </div>
+      <p class="group-h" style="margin-top:40px">Funded by</p>
+      <div class="funders"><span>National Institute on Drug Abuse</span><span>National Cancer Institute</span><span>Research Corporation · Scialog</span><span>Rutgers Busch Biomedical Grant Program</span><span>Neurotechnology Innovation Center (NTICe)</span></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Baker Laboratory for Cognitive Neuroimaging and Stimulation · <a href="https://cmbn.rutgers.edu/">CMBN</a>, Rutgers University–Newark</span>
+    <span>© 2026</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+
+  // One page at a time, routed on the hash
+  var views=[].slice.call(document.querySelectorAll('.view')), links=[].slice.call(document.querySelectorAll('nav a'));
+  function route(){
+    var id=(location.hash||'#home').slice(1); if(!document.getElementById(id)||!document.getElementById(id).classList.contains('view')) id='home';
+    views.forEach(function(v){v.classList.toggle('on',v.id===id)});
+    links.forEach(function(a){if(a.getAttribute('href')==='#'+id)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
+    window.scrollTo(0,0);
+    var nm=(document.querySelector('nav a[href="#'+id+'"]')||{}).textContent; document.title=id==='home'||!nm?'Baker Lab':'Baker Lab · '+nm;
+  }
+  window.addEventListener('hashchange',route); route();
+
+  document.getElementById('copy-email').addEventListener('click',function(){
+    var src=document.getElementById(this.dataset.target), b=this;
+    function sel(){var r=document.createRange();r.selectNodeContents(src);var s=getSelection();s.removeAllRanges();s.addRange(r);}
+    try{navigator.clipboard.writeText(src.textContent).then(function(){b.textContent='Copied'},sel)}catch(e){sel()}
+  });
+})();
+</script>
+
+</body>
+</html>

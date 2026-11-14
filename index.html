@@ -3,7 +3,59 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<style>body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+<style>body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}/* Home graphic: animated research marks on a sagittal brain */
+.lab-brain{--lb-ink:#e7eaef;--lb-acc:#6fa8ff;--lb-bg:#000;margin:0;background:var(--lb-bg);border-radius:4px;overflow:hidden}
+.lab-brain > svg{display:block;width:100%;height:auto}
+.lb-back{fill:#000;opacity:.6}
+.lb-ink{fill:none;stroke:var(--lb-ink)}
+.lb-inkf{fill:var(--lb-ink)}
+.lb-acc{fill:none;stroke:var(--lb-acc)}
+.lb-accf{fill:var(--lb-acc)}
+.lb-bgf{fill:var(--lb-bg)}
+.lb-bgs{fill:none;stroke:var(--lb-bg)}
+.lb-joint{fill:var(--lb-bg);stroke:var(--lb-ink);stroke-width:4}
+.lb-guide{fill:none;stroke:#7d8693}
+.lb-word{font-family:var(--f-display);font-weight:700;font-size:44px;letter-spacing:-.01em;fill:var(--lb-ink);pointer-events:none}
+.lb-tag{font-family:var(--f-mono);font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;fill:#aab1bc;pointer-events:none}
+
+/* Reward positivity: traces redraw like a live sweep */
+.lb-rw-ink{stroke-dasharray:88;animation:lb-rw-ink 6s linear infinite}
+.lb-rw-acc{stroke-dasharray:96;animation:lb-rw-acc 6s linear infinite}
+.lb-rw-fill{animation:lb-rw-fill 6s linear infinite}
+@keyframes lb-rw-ink{0%,40%{stroke-dashoffset:0;opacity:1}47%{stroke-dashoffset:0;opacity:0}48%{stroke-dashoffset:88;opacity:0}52%{stroke-dashoffset:88;opacity:1}76%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:0;opacity:1}}
+@keyframes lb-rw-acc{0%,40%{stroke-dashoffset:0;opacity:1}47%{stroke-dashoffset:0;opacity:0}48%{stroke-dashoffset:96;opacity:0}52%{stroke-dashoffset:96;opacity:1}59%{stroke-dashoffset:96}76%{stroke-dashoffset:0}100%{stroke-dashoffset:0;opacity:1}}
+@keyframes lb-rw-fill{0%,40%{opacity:1}47%{opacity:0}74%{opacity:0}86%{opacity:1}100%{opacity:1}}
+
+/* Figure-8 coil: opposing currents meet at the junction and fire */
+.lb-cb-a{stroke-dasharray:9 50.69;animation:lb-cb-a 3.2s linear infinite}
+.lb-cb-b{stroke-dasharray:9 50.69;animation:lb-cb-b 3.2s linear infinite}
+.lb-cb-ripple{transform-box:fill-box;transform-origin:center;animation:lb-ripple-b 1.6s ease-out -.8s infinite}
+.lb-cb-dot{transform-box:fill-box;transform-origin:center;animation:lb-cb-dot 1.6s ease-out -.8s infinite}
+@keyframes lb-cb-a{from{stroke-dashoffset:0}to{stroke-dashoffset:-119.38}}
+@keyframes lb-cb-b{from{stroke-dashoffset:0}to{stroke-dashoffset:119.38}}
+@keyframes lb-ripple-b{0%{transform:scale(1);opacity:.9}55%{transform:scale(3.4);opacity:0}100%{transform:scale(3.4);opacity:0}}
+@keyframes lb-cb-dot{0%{transform:scale(1.22)}35%{transform:scale(1)}100%{transform:scale(1)}}
+
+/* Closed loop: wave scrolls, marker rides it, pulse at each crest */
+.lb-pl-wave{animation:lb-pl-scroll 3.2s linear infinite}
+.lb-pl-bob{animation:lb-pl-bob 1.6s cubic-bezier(.3642,0,.6358,1) infinite alternate}
+.lb-pl-ripple{transform-box:fill-box;transform-origin:center;animation:lb-ripple-a 3.2s ease-out infinite}
+@keyframes lb-pl-scroll{from{transform:translateX(0)}to{transform:translateX(-80px)}}
+@keyframes lb-pl-bob{from{transform:translateY(0)}to{transform:translateY(28px)}}
+@keyframes lb-ripple-a{0%{transform:scale(1);opacity:.9}38%{transform:scale(3.6);opacity:0}100%{transform:scale(3.6);opacity:0}}
+
+/* T-maze: right arm rewarded, left arm not */
+.lb-tm-dot{animation:lb-tm-run 8s linear infinite}
+.lb-tm-ripple{transform-box:fill-box;transform-origin:center;animation:lb-tm-ripple 8s linear infinite}
+@keyframes lb-tm-run{0%{transform:translate(25px,-50px);opacity:1}8%{transform:translate(25px,-50px);opacity:1}12%{transform:translate(25px,-50px);opacity:0}14%{transform:translate(0,0);opacity:0}18%{transform:translate(0,0);opacity:1}36%{transform:translate(0,-50px);opacity:1}46%{transform:translate(-25px,-50px);opacity:1}50%{transform:translate(-25px,-50px);opacity:.4}58%{transform:translate(-25px,-50px);opacity:.4}62%{transform:translate(-25px,-50px);opacity:0}64%{transform:translate(0,0);opacity:0}68%{transform:translate(0,0);opacity:1}86%{transform:translate(0,-50px);opacity:1}96%{transform:translate(25px,-50px);opacity:1}100%{transform:translate(25px,-50px);opacity:1}}
+@keyframes lb-tm-ripple{0%{transform:scale(1.8);opacity:.6}8%{transform:scale(3.4);opacity:0}95.9%{transform:scale(1);opacity:0}96%{transform:scale(1);opacity:.9}100%{transform:scale(1.8);opacity:.6}}
+
+@media (prefers-reduced-motion: reduce){
+  .lab-brain *{animation:none !important}
+  .lb-pl-ripple,.lb-cb-ripple,.lb-tm-ripple,.lb-cb-a,.lb-cb-b{opacity:0}
+  .lb-tm-dot{transform:translate(25px,-50px)}
+}
+</style>
 <title>Baker Lab</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Laboratory for Cognitive Neuroimaging and Stimulation, Rutgers University–Newark">
@@ -300,7 +352,85 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 <main class="wrap" id="top">
   <div class="hero view" id="home">
     <img class="ru-logo" src="img/rutgers_newark.png" alt="Rutgers University–Newark" width="308" height="70">
-    <figure class="home-photo"><img src="img/m_robot.jpg" alt="The lab robot-assisted TMS system positioning a coil over an EEG cap"></figure>
+    <figure class="lab-brain">
+  <svg viewBox="0 0 1200 776" role="img" aria-label="Baker Lab: a side view of the brain overlaid with animated graphics for goal-directed navigation, closed-loop stimulation, reward processing and a figure-8 stimulation coil">
+    <image opacity="0.7" href="img/brain_sagittal.jpg" x="140" y="40" width="860" height="696.3"/>
+
+    <!-- T-maze -->
+    <g transform="translate(365 284)">
+      <g transform="rotate(0) scale(2.2)">
+        <circle class="lb-back" r="60"/>
+        <g transform="translate(-48 -48)">
+          <path class="lb-ink" stroke-width="6.5" stroke-linejoin="round" d="M10,13 H86 V39 H61 V87 H35 V39 H10 Z"/>
+          <path class="lb-guide" stroke-width="2" stroke-linecap="round" stroke-dasharray="0.1 6.25" d="M48,76 V26 M23,26 H73"/>
+          <circle class="lb-acc lb-tm-ripple" stroke-width="1.6" cx="73" cy="26" r="7"/>
+          <circle class="lb-accf lb-tm-dot" cx="48" cy="76" r="7"/>
+        </g>
+      </g>
+    </g>
+
+    <!-- Closed loop -->
+    <g transform="translate(721 278)">
+      <g transform="rotate(0) scale(1.64)">
+        <circle class="lb-back" r="60"/>
+        <g transform="translate(-48 -48)">
+          <defs><clipPath id="lb-port"><circle cx="48" cy="48" r="40"/></clipPath></defs>
+          <g clip-path="url(#lb-port)">
+            <path class="lb-ink lb-pl-wave" stroke-width="6" d="M-52,34 C-37.43,34 -26.57,62 -12,62 C2.57,62 13.43,34 28,34 C42.57,34 53.43,62 68,62 C82.57,62 93.43,34 108,34 C122.57,34 133.43,62 148,62 C162.57,62 173.43,34 188,34"/>
+          </g>
+          <circle class="lb-ink" stroke-width="6" cx="48" cy="48" r="40"/>
+          <circle class="lb-acc lb-pl-ripple" stroke-width="1.6" cx="28" cy="34" r="7"/>
+          <g class="lb-pl-bob">
+            <circle class="lb-bgf" cx="28" cy="34" r="10"/>
+            <circle class="lb-accf" cx="28" cy="34" r="7"/>
+          </g>
+        </g>
+      </g>
+    </g>
+
+    <!-- Reward positivity -->
+    <g transform="translate(1012 281)">
+      <g transform="rotate(0) scale(2.2)">
+        <circle class="lb-back" r="60"/>
+        <g transform="translate(-48 -48)">
+          <path class="lb-accf lb-rw-fill" fill-opacity=".28" d="M34,58 C44,58 46,22 56,22 C67,22 70,58 88,58 C66,58 62,70 52,70 C44,70 42,58 34,58 Z"/>
+          <path class="lb-ink lb-rw-ink" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" d="M8,58 H34 C42,58 44,70 52,70 C62,70 66,58 88,58"/>
+          <path class="lb-acc lb-rw-acc" stroke-width="6" stroke-linecap="round" d="M34,58 C44,58 46,22 56,22 C67,22 70,58 88,58"/>
+        </g>
+      </g>
+    </g>
+
+    <!-- Figure-8 coil with a handle. The point where the two windings meet is the centre you drag. -->
+    <g transform="translate(852 91)">
+      <g transform="rotate(90) scale(1.78)">
+        <!-- handle -->
+        <path class="lb-ink" stroke-width="10" stroke-linecap="round" d="M12,0 H78"/>
+        <!-- the two windings -->
+        <circle class="lb-ink" stroke-width="7.5" cx="0" cy="-18.5" r="19"/>
+        <circle class="lb-ink" stroke-width="7.5" cx="0" cy="18.5" r="19"/>
+        <circle class="lb-bgs lb-cb-a" stroke-width="2.2" stroke-linecap="round" cx="0" cy="-18.5" r="19"/>
+        <circle class="lb-bgs lb-cb-b" stroke-width="2.2" stroke-linecap="round" cx="0" cy="18.5" r="19"/>
+        <circle class="lb-bgf" cx="0" cy="0" r="11"/>
+        <circle class="lb-acc lb-cb-ripple" stroke-width="1.6" cx="0" cy="0" r="7.5"/>
+        <circle class="lb-accf lb-cb-dot" cx="0" cy="0" r="7.5"/>
+      </g>
+    </g>
+    <!-- Baker Lab logo lockup -->
+    <g transform="translate(838 663)">
+      <g transform="rotate(0) scale(1.72)">
+        <g transform="translate(-205 -46)">
+          <svg x="0" y="0" width="84" height="84" viewBox="0 0 96 96" overflow="visible">
+            <path class="lb-accf" fill-opacity=".28" d="M34,58 C44,58 46,22 56,22 C67,22 70,58 88,58 C66,58 62,70 52,70 C44,70 42,58 34,58 Z"/>
+            <path class="lb-ink" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" d="M8,58 H34 C42,58 44,70 52,70 C62,70 66,58 88,58"/>
+            <path class="lb-acc" stroke-width="6" stroke-linecap="round" d="M34,58 C44,58 46,22 56,22 C67,22 70,58 88,58"/>
+          </svg>
+          <text class="lb-word" x="100" y="50">Baker Lab</text>
+          <text class="lb-tag" x="101" y="74">Cognitive Neuroimaging &amp; Stimulation</text>
+        </g>
+      </g>
+    </g>
+  </svg>
+</figure>
     <div>
       <p class="kicker">Baker Lab · Principal Investigator Travis E. Baker, PhD · Rutgers University–Newark</p>
       <h1>Laboratory for Cognitive Neuroimaging and <em>Stimulation</em></h1>
